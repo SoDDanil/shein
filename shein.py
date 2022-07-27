@@ -1,5 +1,7 @@
 import requests
 import json
+from selenium import webdriver
+
 
 headers = {
     'Host': 'api-service.shein.com',
@@ -32,6 +34,8 @@ headers = {
     'user-agent': 'Shein 8.3.4 Android 6.0 Samsung RU ru',
 }
 
+
+driver = webdriver.Chrome()
 
 all_categories_select_id = [1766,2036,3195,2030,]
 
@@ -79,7 +83,8 @@ def main():
         count_product = response.json()['info']['num']
         print(count_product)
         page = 0
-        for product in range (0,count_product+1,20):
+        for product in range (0,count_product+1,100):
+            driver.get(url=url,params=params,headers=headers)
             page+=1
             params = {
             'filter': '',
@@ -94,7 +99,7 @@ def main():
             'sort': '0',
             'page': page,
             'select_id': id,
-            'limit': '20',
+            'limit': '100',
         }
             print(f'Страница {page}')
             
@@ -107,3 +112,5 @@ def main():
 
 if __name__=='__main__':
     main()
+    driver.close()
+    driver.quit()
