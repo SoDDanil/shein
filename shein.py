@@ -32,23 +32,11 @@ headers = {
     'user-agent': 'Shein 8.3.4 Android 6.0 Samsung RU ru',
 }
 
-params = {
-    'filter': '',
-    'tag_ids': '',
-    'userpath': 'КАТЕГОРИЯ>ЖЕНСКОЕ>ПЛАТЬЯ>ПОКУПАЙ ПО КАТЕГОРИИ>Новые Платья',
-    'filter_good_ids': '',
-    'store_code': '',
-    'srctype': 'category',
-    'cat_id': '',
-    'page_name': 'page_select_class',
-    'adp': '10664691',
-    'sort': '0',
-    'page': '2',
-    'select_id': '00205078',
-    'limit': '20',
-}
 
-def get_url(url):
+all_categories_select_id = [1766,2036,3195,2030,]
+
+
+def get_url(url,params):
     response = requests.get(url=url,params=params,headers=headers)
     print(response.status_code)
     with open('collect.json', 'w', encoding='Windows-1251') as f:
@@ -69,9 +57,50 @@ def collect_data(response):
 def main():
     f = open('data.txt','w',encoding='Windows-1251')
     f.close()
-    url = 'https://api-service.shein.com/category/get_select_product_list'
-    response = get_url(url)
-    collect_data(response)
+    for id in all_categories_select_id:
+        print(id)
+        url = 'https://api-service.shein.com/category/real_category_goods_list'
+        params = {
+            'filter': '',
+            'tag_ids': '',
+            'userpath': 'КАТЕГОРИЯ>ЖЕНСКОЕ>ПЛАТЬЯ>ПОКУПАЙ ПО КАТЕГОРИИ>Новые Платья',
+            'filter_good_ids': '',
+            'store_code': '',
+            'srctype': 'category',
+            'cat_id': '',
+            'page_name': 'page_select_class',
+            'adp': '10664691',
+            'sort': '0',
+            'page': 1,
+            'select_id': id,
+            'limit': '20',
+        }
+        response = get_url(url,params)
+        count_product = response.json()['info']['num']
+        print(count_product)
+        page = 0
+        for product in range (0,count_product+1,20):
+            page+=1
+            params = {
+            'filter': '',
+            'tag_ids': '',
+            'userpath': 'КАТЕГОРИЯ>ЖЕНСКОЕ>РАСПРОДАЖА>РЕКОМЕНДАЦИИ>Смотреть Все',
+            'filter_good_ids': '',
+            'store_code': '',
+            'srctype': 'category',
+            'cat_id': '',
+            'page_name': 'page_select_class',
+            'adp': '2477325',
+            'sort': '0',
+            'page': page,
+            'select_id': id,
+            'limit': '20',
+        }
+            print(f'Страница {page}')
+            
+            response = get_url(url,params)
+            collect_data(response)
+        
     
     
 
